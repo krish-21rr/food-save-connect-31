@@ -5,13 +5,17 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, type AccountRole } from "@/lib/auth";
 
-type Search = { role: AccountRole | undefined; mode: "signin" | "signup" | undefined };
+type Search = { role?: AccountRole; mode?: "signin" | "signup" };
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>): Search => ({
-    role: search["role"] === "donor" ? "donor" : search["role"] === "receiver" ? "receiver" : undefined,
-    mode: search["mode"] === "signup" ? "signup" : search["mode"] === "signin" ? "signin" : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): Search => {
+    const role = search["role"];
+    const mode = search["mode"];
+    return {
+      ...(role === "donor" || role === "receiver" ? { role } : {}),
+      ...(mode === "signin" || mode === "signup" ? { mode } : {}),
+    };
+  },
   head: () => ({
     meta: [
       { title: "Sign in or Join — Food Rescue" },
