@@ -14,16 +14,227 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      donations: {
+        Row: {
+          address: string
+          allergens: string[]
+          category: string
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          deadline: string
+          donor_id: string
+          expired_at: string | null
+          id: string
+          image_urls: string[]
+          notes: string | null
+          picked_up_at: string | null
+          quantity: string
+          status: Database["public"]["Enums"]["donation_status"]
+          title: string
+          updated_at: string
+          veg: boolean
+        }
+        Insert: {
+          address: string
+          allergens?: string[]
+          category?: string
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          deadline: string
+          donor_id: string
+          expired_at?: string | null
+          id?: string
+          image_urls?: string[]
+          notes?: string | null
+          picked_up_at?: string | null
+          quantity: string
+          status?: Database["public"]["Enums"]["donation_status"]
+          title: string
+          updated_at?: string
+          veg?: boolean
+        }
+        Update: {
+          address?: string
+          allergens?: string[]
+          category?: string
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          deadline?: string
+          donor_id?: string
+          expired_at?: string | null
+          id?: string
+          image_urls?: string[]
+          notes?: string | null
+          picked_up_at?: string | null
+          quantity?: string
+          status?: Database["public"]["Enums"]["donation_status"]
+          title?: string
+          updated_at?: string
+          veg?: boolean
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          donation_id: string | null
+          id: string
+          message: string
+          read: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          donation_id?: string | null
+          id?: string
+          message: string
+          read?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          donation_id?: string | null
+          id?: string
+          message?: string
+          read?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_donation_id_fkey"
+            columns: ["donation_id"]
+            isOneToOne: false
+            referencedRelation: "donations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          created_at: string
+          display_name: string
+          email: string | null
+          id: string
+          org_name: string | null
+          phone: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string | null
+          id: string
+          org_name?: string | null
+          phone?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string | null
+          id?: string
+          org_name?: string | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["account_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["account_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["account_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_donation: {
+        Args: { _donation_id: string }
+        Returns: {
+          address: string
+          allergens: string[]
+          category: string
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          deadline: string
+          donor_id: string
+          expired_at: string | null
+          id: string
+          image_urls: string[]
+          notes: string | null
+          picked_up_at: string | null
+          quantity: string
+          status: Database["public"]["Enums"]["donation_status"]
+          title: string
+          updated_at: string
+          veg: boolean
+        }
+        SetofOptions: {
+          from: "*"
+          to: "donations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      expire_stale_donations: { Args: never; Returns: undefined }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["account_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      mark_picked_up: {
+        Args: { _donation_id: string }
+        Returns: {
+          address: string
+          allergens: string[]
+          category: string
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          deadline: string
+          donor_id: string
+          expired_at: string | null
+          id: string
+          image_urls: string[]
+          notes: string | null
+          picked_up_at: string | null
+          quantity: string
+          status: Database["public"]["Enums"]["donation_status"]
+          title: string
+          updated_at: string
+          veg: boolean
+        }
+        SetofOptions: {
+          from: "*"
+          to: "donations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
-      [_ in never]: never
+      account_role: "donor" | "receiver"
+      donation_status: "AVAILABLE" | "CLAIMED" | "PICKED_UP" | "EXPIRED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +361,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      account_role: ["donor", "receiver"],
+      donation_status: ["AVAILABLE", "CLAIMED", "PICKED_UP", "EXPIRED"],
+    },
   },
 } as const
