@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, type AccountRole } from "@/lib/auth";
 
-type Search = { role?: AccountRole; mode?: "signin" | "signup" };
+type Search = { role: AccountRole | undefined; mode: "signin" | "signup" | undefined };
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): Search => ({
