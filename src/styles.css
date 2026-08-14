@@ -160,5 +160,79 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
   }
 }
+
+@utility blob {
+  position: absolute;
+  border-radius: 50% 40% 55% 45% / 45% 55% 40% 60%;
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+@utility card-soft {
+  background: var(--color-card);
+  border-radius: 1.75rem;
+  box-shadow:
+    0 1px 2px oklch(0.4 0.05 60 / 6%),
+    0 18px 40px -24px oklch(0.4 0.05 60 / 30%);
+  border: 1px solid var(--color-border);
+}
+
+@utility btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.18s ease;
+  &:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
+
+@utility btn-primary {
+  background: var(--color-brand);
+  color: var(--color-brand-foreground);
+  &:hover {
+    background: color-mix(in oklab, var(--color-brand) 88%, black);
+    transform: translateY(-1px);
+  }
+}
+
+@utility btn-outline {
+  background: transparent;
+  color: var(--color-foreground);
+  border: 2px solid var(--color-border);
+  &:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+    background: var(--color-brand-soft);
+  }
+}
+
+@utility field {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  &:focus {
+    outline: none;
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-brand) 18%, transparent);
+  }
+}
+
