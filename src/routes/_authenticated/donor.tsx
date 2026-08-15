@@ -65,11 +65,17 @@ function DonorPage() {
     if (!user) return;
     const { data, error } = await supabase
       .from("donations")
-      .select("*, receiver:profiles!donations_claimed_by_fkey(display_name, org_name, phone)")
+      .select("*")
       .eq("donor_id", user.id)
       .order("created_at", { ascending: false });
     if (error) toast.error(error.message);
-    setRows((data as unknown as Row[]) ?? []);
+    const donations = (data as unknown as Donation[]) ?? [];
+    const ids = [...new Set(donations.map((d) => d.claimed_by).filter(Boolean))] as string[];
+    const { data: people } = ids.length
+      ? await supabase.from("profiles").select("id, display_name, org_name, phone").in("id", ids)
+      : { data: [] };
+    const byId = new Map((people ?? []).map((p) => [p.id, p]));
+    setRows(donations.map((d) => ({ ...d, receiver: (d.claimed_by && byId.get(d.claimed_by)) || null })));
   };
 
   useEffect(() => {
