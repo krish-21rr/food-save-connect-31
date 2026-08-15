@@ -36,7 +36,7 @@ function Header() {
         <Link to="/feed" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
           Log In
         </Link>
-        <Link to="/donate" className="btn-pill btn-primary px-5 py-2.5 text-sm">
+        <Link to="/donor" className="btn-pill btn-primary px-5 py-2.5 text-sm">
           Sign Up
         </Link>
       </nav>
@@ -92,7 +92,7 @@ function Landing() {
               meals travel to people who need them instead of the bin.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/donate" className="btn-pill btn-primary text-base">
+              <Link to="/donor" className="btn-pill btn-primary text-base">
                 I Want to Donate
               </Link>
               <Link to="/feed" className="btn-pill btn-outline text-base">
@@ -186,7 +186,7 @@ function Landing() {
               </p>
             </div>
             <Link
-              to="/donate"
+              to="/donor"
               className="btn-pill shrink-0 bg-card text-base text-foreground hover:bg-secondary"
             >
               Donate Surplus Food
