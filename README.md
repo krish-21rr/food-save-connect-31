@@ -1,72 +1,42 @@
-# Food Share Connect
+# 🍲 Food Rescue: Don't Waste, Donate Food
 
-Prompt:
+> **Food Share Connect** — Connecting surplus food with those who need it most, in real-time.
 
-Build a complete, responsive web application called "Food Rescue: Don't Waste, Donate Food" using React, Next.js (App Router, "use client"), Tailwind CSS, and Lucide React icons.
+**Food Rescue** is a modern, responsive web application built to eliminate food waste by seamlessly bridging the gap between food donors (individuals, restaurants, event organizers) and receivers (NGOs, shelters, community centers). By providing a real-time feed of available surplus food, the platform ensures rapid rescue and delivery.
 
-Design System
+## ✨ Features
 
-Typography: A modern, playful hierarchy — bold, rounded display type (e.g. Baloo 2, Fredoka, or Poppins ExtraBold) for major headings and section titles, paired with a clean, neutral sans-serif (e.g. Inter or Manrope) for navigation, body copy, labels, and supporting text. Push strong contrast between the two: large/heavy display weights for headlines, smaller/lighter body weights for detail — so the page is easy to scan at a glance.
+*   **Landing Page (`/`):** A welcoming gateway that explains how the platform works—from listing surplus food to real-time alerts and delivery—with clear calls to action for both donors and receivers.
+*   **Donation Portal (`/donate`):** A comprehensive, user-friendly form for donors to list food. Features include category selection, quantity/servings, expiration deadlines, allergy/dietary badges (Veg/Non-Veg), photo uploads, and a trust-building sidebar with safety guidelines.
+*   **Live Receiver Feed (`/feed`):** A dynamic, real-time dashboard for NGOs and shelters to find available food. Includes a live donation counter, search functionality, intuitive filter chips (Closing Soon, Cooked Meals, Raw Produce), and detailed claim cards.
 
-Visual Language: Soft and organic — generously rounded corners (cards, buttons, inputs, images), curved section dividers/blobs instead of hard straight breaks, subtle layered shadows for depth, generous whitespace, and occasional oversized decorative elements (blobs, food illustrations, soft gradient shapes) placed around — never inside — the main content.
+## 🎨 Design System & UX
 
-Color Palette: Warm, high-contrast, editorial-friendly — a light neutral background (warm off-white/cream), emerald-green as the primary action color, orange as a vibrant secondary accent, plus supporting warm tones (yellow, coral) for badges, highlights, and illustrations. Colors should be used deliberately to separate sections and establish hierarchy, not just decorate.
+The application is built with a strong focus on visual hierarchy, accessibility, and a welcoming user experience:
 
-Layout: Centered grid system with balanced margins, responsive multi-column layouts on desktop collapsing cleanly to single-column on mobile. Content grouped into consistent card-based sections with uniform padding, spacing, and alignment throughout.
+*   **Typography:** A bold, playful display font for headings paired with a clean, neutral sans-serif for body text, ensuring effortless scannability.
+*   **Visual Language:** Soft, organic shapes with generously rounded corners, curved section dividers, and subtle layered shadows to create depth without clutter.
+*   **Color Palette:** A warm off-white background contrasted with an Emerald-Green primary action color, vibrant Orange secondary accents, and warm supporting tones for badges and highlights.
+*   **Interactive Elements:** Fully rounded pill-shaped buttons with high-contrast solid fills for primary actions, clear ghost styles for secondary actions, and distinct hover states.
 
-Buttons & Interactive Elements: Fully rounded (pill or large-radius) shapes, high-contrast solid fills for primary actions, clear outline/ghost style for secondary actions, and visibly distinct hover/focus states so interactive elements are always recognizable.
+## 🛠️ Tech Stack
 
-UX Principles: Prioritize visual scanning and clear grouping — strong section hierarchy (eyebrow labels, bold headings, supporting subtext), comfortable whitespace between groups, and consistent, predictable patterns for cards, badges, and CTAs across every page.
+*   **Framework:** [Next.js](https://nextjs.org/) (App Router, Client Components)
+*   **Library:** [React](https://react.dev/)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+*   **Icons:** [Lucide React](https://lucide.dev/)
+*   **AI Builder:** Generated and maintained via [Lovable](https://lovable.dev)
 
-Pages to Build
+## 🚀 Getting Started
 
-1. Landing Page (/)
+To get a local copy up and running, follow these simple steps.
 
-Header: "Food Rescue" text logo, "Log In" text link, solid green "Sign Up" button
+### Prerequisites
+You will need Node.js and npm installed on your machine. We recommend using [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) to manage your Node versions.
 
-Hero: Headline "Rescue Food, Feed Hope.", sub-headline about connecting donors to NGOs/shelters in real-time, two CTAs ("I Want to Donate" solid, "I Need Food" outline)
+### Installation
 
-"How Food Rescue Works" — 3 cards: List Surplus Food, Real-Time Alerts, Rescue & Deliver
+1. Clone the repository:
+   ```sh
+   git clone [https://github.com/your-username/food-share-connect.git](https://github.com/your-username/food-share-connect.git)
 
-Footer: project name, © 2026, placeholder links
-
-2. Food Donation Form (/donate)
-
-Header with logo + "Back to Home"
-
-Title: "Donate Surplus Food" with explanatory subtext
-
-Two-column layout: form card (Donor Name, Phone, Food Title, Category dropdown, Quantity/Serves, Expiration/Pickup Deadline, Pickup Address, Veg/Non-Veg + Allergen badges, Pickup Notes, Photo Upload, "Publish Food Donation" button) alongside a Safety & Trust sidebar ("Safety First Guidelines" checklist + "What Happens Next?" 3-step timeline)
-
-3. Live Receiver Feed (/feed)
-
-Top nav: logo, "Active Claims" counter, profile avatar
-
-Header: "Live Food Feed" with dynamic donation counter, search bar, filter chips (All, Vegetarian, Cooked Meals, Raw Produce, Closing Soon)
-
-Responsive grid of donation cards (Donor Name, Time Posted, Food Title, Quantity, Distance, Pickup Deadline, Veg/Refrigeration badges, "Claim Food" button)
-
-Empty state fallback when no donations match
-
-Apply the design system consistently across all three pages so they feel like one cohesive product.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/120d526c-78a7-4b17-88ec-a96dd164647e).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
