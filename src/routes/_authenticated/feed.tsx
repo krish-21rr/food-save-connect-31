@@ -65,11 +65,17 @@ function FeedPage() {
   const fetchRows = async () => {
     const { data, error } = await supabase
       .from("donations")
-      .select("*, donor:profiles!donations_donor_id_fkey(display_name, org_name, phone)")
+      .select("*")
       .order("created_at", { ascending: false })
       .limit(100);
     if (error) toast.error(error.message);
-    setRows((data as unknown as Row[]) ?? []);
+    const donations = (data as unknown as Donation[]) ?? [];
+    const ids = [...new Set(donations.map((d) => d.donor_id))];
+    const { data: people } = ids.length
+      ? await supabase.from("profiles").select("id, display_name, org_name, phone").in("id", ids)
+      : { data: [] };
+    const byId = new Map((people ?? []).map((p) => [p.id, p]));
+    setRows(donations.map((d) => ({ ...d, donor: byId.get(d.donor_id) ?? null })));
     setLoading(false);
   };
 
