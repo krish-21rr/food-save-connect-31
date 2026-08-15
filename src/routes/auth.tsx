@@ -50,7 +50,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (loading || !session) return;
+    if (loading || !session || !myRole) return;
     void navigate({ to: myRole === "donor" ? "/donor" : "/feed", replace: true });
   }, [loading, session, myRole, navigate]);
 
