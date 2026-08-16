@@ -109,7 +109,17 @@ function DonorPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    const when = new Date(deadline).getTime();
+    if (!deadline || Number.isNaN(when)) {
+      toast.error("Choose a pickup deadline");
+      return;
+    }
+    if (when <= Date.now()) {
+      toast.error("Pickup deadline is in the past — listings expire instantly and won't show in the live feed.");
+      return;
+    }
     setBusy(true);
+
     try {
       const paths: string[] = [];
       if (file) {
