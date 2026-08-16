@@ -23,6 +23,8 @@ export type Database = {
           claimed_by: string | null
           created_at: string
           deadline: string
+          delivered_at: string | null
+          delivery_requested: boolean
           donor_id: string
           expired_at: string | null
           id: string
@@ -34,6 +36,8 @@ export type Database = {
           title: string
           updated_at: string
           veg: boolean
+          volunteer_accepted_at: string | null
+          volunteer_id: string | null
         }
         Insert: {
           address: string
@@ -43,6 +47,8 @@ export type Database = {
           claimed_by?: string | null
           created_at?: string
           deadline: string
+          delivered_at?: string | null
+          delivery_requested?: boolean
           donor_id: string
           expired_at?: string | null
           id?: string
@@ -54,6 +60,8 @@ export type Database = {
           title: string
           updated_at?: string
           veg?: boolean
+          volunteer_accepted_at?: string | null
+          volunteer_id?: string | null
         }
         Update: {
           address?: string
@@ -63,6 +71,8 @@ export type Database = {
           claimed_by?: string | null
           created_at?: string
           deadline?: string
+          delivered_at?: string | null
+          delivery_requested?: boolean
           donor_id?: string
           expired_at?: string | null
           id?: string
@@ -74,8 +84,42 @@ export type Database = {
           title?: string
           updated_at?: string
           veg?: boolean
+          volunteer_accepted_at?: string | null
+          volunteer_id?: string | null
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          donation_id: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          donation_id: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          donation_id?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_donation_id_fkey"
+            columns: ["donation_id"]
+            isOneToOne: false
+            referencedRelation: "donations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
@@ -165,7 +209,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      claim_donation: {
+      accept_delivery: {
         Args: { _donation_id: string }
         Returns: {
           address: string
@@ -175,6 +219,8 @@ export type Database = {
           claimed_by: string | null
           created_at: string
           deadline: string
+          delivered_at: string | null
+          delivery_requested: boolean
           donor_id: string
           expired_at: string | null
           id: string
@@ -186,6 +232,74 @@ export type Database = {
           title: string
           updated_at: string
           veg: boolean
+          volunteer_accepted_at: string | null
+          volunteer_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "donations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      cancel_delivery: {
+        Args: { _donation_id: string }
+        Returns: {
+          address: string
+          allergens: string[]
+          category: string
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          deadline: string
+          delivered_at: string | null
+          delivery_requested: boolean
+          donor_id: string
+          expired_at: string | null
+          id: string
+          image_urls: string[]
+          notes: string | null
+          picked_up_at: string | null
+          quantity: string
+          status: Database["public"]["Enums"]["donation_status"]
+          title: string
+          updated_at: string
+          veg: boolean
+          volunteer_accepted_at: string | null
+          volunteer_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "donations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      claim_donation: {
+        Args: { _donation_id: string }
+        Returns: {
+          address: string
+          allergens: string[]
+          category: string
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          deadline: string
+          delivered_at: string | null
+          delivery_requested: boolean
+          donor_id: string
+          expired_at: string | null
+          id: string
+          image_urls: string[]
+          notes: string | null
+          picked_up_at: string | null
+          quantity: string
+          status: Database["public"]["Enums"]["donation_status"]
+          title: string
+          updated_at: string
+          veg: boolean
+          volunteer_accepted_at: string | null
+          volunteer_id: string | null
         }
         SetofOptions: {
           from: "*"
@@ -202,6 +316,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_donation_participant: {
+        Args: { _donation_id: string; _user_id: string }
+        Returns: boolean
+      }
       mark_picked_up: {
         Args: { _donation_id: string }
         Returns: {
@@ -212,6 +330,8 @@ export type Database = {
           claimed_by: string | null
           created_at: string
           deadline: string
+          delivered_at: string | null
+          delivery_requested: boolean
           donor_id: string
           expired_at: string | null
           id: string
@@ -223,6 +343,41 @@ export type Database = {
           title: string
           updated_at: string
           veg: boolean
+          volunteer_accepted_at: string | null
+          volunteer_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "donations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      request_delivery: {
+        Args: { _donation_id: string }
+        Returns: {
+          address: string
+          allergens: string[]
+          category: string
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          deadline: string
+          delivered_at: string | null
+          delivery_requested: boolean
+          donor_id: string
+          expired_at: string | null
+          id: string
+          image_urls: string[]
+          notes: string | null
+          picked_up_at: string | null
+          quantity: string
+          status: Database["public"]["Enums"]["donation_status"]
+          title: string
+          updated_at: string
+          veg: boolean
+          volunteer_accepted_at: string | null
+          volunteer_id: string | null
         }
         SetofOptions: {
           from: "*"
@@ -233,7 +388,7 @@ export type Database = {
       }
     }
     Enums: {
-      account_role: "donor" | "receiver"
+      account_role: "donor" | "receiver" | "volunteer"
       donation_status: "AVAILABLE" | "CLAIMED" | "PICKED_UP" | "EXPIRED"
     }
     CompositeTypes: {
@@ -362,7 +517,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      account_role: ["donor", "receiver"],
+      account_role: ["donor", "receiver", "volunteer"],
       donation_status: ["AVAILABLE", "CLAIMED", "PICKED_UP", "EXPIRED"],
     },
   },
