@@ -10,9 +10,17 @@ import {
   formatDeadline,
   statusLabel,
   timeAgo,
+  timeLeft,
   useSignedUrls,
   type Donation,
 } from "@/lib/food";
+
+/** yyyy-MM-ddTHH:mm in the user's local timezone, for datetime-local inputs. */
+function toLocalInput(d: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 
 export const Route = createFileRoute("/_authenticated/donor")({
   head: () => ({
@@ -101,7 +109,17 @@ function DonorPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    const when = new Date(deadline).getTime();
+    if (!deadline || Number.isNaN(when)) {
+      toast.error("Choose a pickup deadline");
+      return;
+    }
+    if (when <= Date.now()) {
+      toast.error("Pickup deadline is in the past — listings expire instantly and won't show in the live feed.");
+      return;
+    }
     setBusy(true);
+
     try {
       const paths: string[] = [];
       if (file) {
@@ -220,11 +238,41 @@ function DonorPage() {
                 <input
                   className="field"
                   type="datetime-local"
+                  min={toLocalInput(new Date(Date.now() + 5 * 60 * 1000))}
                   value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   required
                 />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {[
+                    { label: "In 2 hours", h: 2 },
+                    { label: "In 4 hours", h: 4 },
+                    { label: "In 8 hours", h: 8 },
+                    { label: "Tomorrow", h: 24 },
+                  ].map((q) => (
+                    <button
+                      key={q.label}
+                      type="button"
+                      onClick={() => setDeadline(toLocalInput(new Date(Date.now() + q.h * 3600 * 1000)))}
+                      className="rounded-full border border-border px-3 py-1 text-xs font-bold text-muted-foreground transition-colors hover:border-brand hover:text-brand"
+                    >
+                      {q.label}
+                    </button>
+                  ))}
+                </div>
+                {deadline && (
+                  <p
+                    className={`mt-2 text-xs font-bold ${
+                      new Date(deadline).getTime() > Date.now() ? "text-brand" : "text-destructive"
+                    }`}
+                  >
+                    {new Date(deadline).getTime() > Date.now()
+                      ? `Goes live now and stays visible for ${timeLeft(new Date(deadline).toISOString())}`
+                      : "That time has already passed — receivers won't see this listing. Pick a future time."}
+                  </p>
+                )}
               </Field>
+
               <Field label="Pickup Address" full>
                 <input
                   className="field"
@@ -390,13 +438,39 @@ function ListingCard({
         </div>
         <p className="mt-1 text-xs text-muted-foreground">Posted {timeAgo(row.created_at)}</p>
         <p className="mt-3 text-sm text-muted-foreground">{row.quantity}</p>
-        <p className="text-sm text-muted-foreground">Pickup by {formatDeadline(row.deadline)}</p>
+        <p className="text-sm text-muted-foreground">
+          Pickup by {formatDeadline(row.deadline)}
+          {row.status === "AVAILABLE" ? ` · ${timeLeft(row.deadline)}` : ""}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-muted-foreground">
+            {row.category}
+          </span>
+          <span className="rounded-full bg-brand-soft px-3 py-1 text-xs font-bold text-brand">
+            {row.veg ? "Veg" : "Non-veg"}
+          </span>
+          {(row.allergens ?? []).map((a) => (
+            <span
+              key={a}
+              className="rounded-full bg-tangerine-soft px-3 py-1 text-xs font-bold text-accent-foreground"
+            >
+              {a}
+            </span>
+          ))}
+        </div>
+        {row.notes && <p className="mt-3 text-sm text-muted-foreground">{row.notes}</p>}
+        {row.status === "EXPIRED" && (
+          <p className="mt-3 text-xs font-bold text-destructive">
+            Expired before pickup — the deadline had already passed, so it never showed in the live feed.
+          </p>
+        )}
         {receiver && (
           <p className="mt-2 text-sm font-semibold">
             Claimed by {receiver}
             {row.receiver?.phone ? ` · ${row.receiver.phone}` : ""}
           </p>
         )}
+
 
         <div className="mt-4 flex gap-2">
           {row.status === "CLAIMED" && (
