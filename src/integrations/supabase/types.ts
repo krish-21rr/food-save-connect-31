@@ -233,7 +233,7 @@ export type Database = {
       }
     }
     Enums: {
-      account_role: "donor" | "receiver"
+      account_role: "donor" | "receiver" | "volunteer"
       donation_status: "AVAILABLE" | "CLAIMED" | "PICKED_UP" | "EXPIRED"
     }
     CompositeTypes: {
@@ -362,7 +362,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      account_role: ["donor", "receiver"],
+      account_role: ["donor", "receiver", "volunteer"],
       donation_status: ["AVAILABLE", "CLAIMED", "PICKED_UP", "EXPIRED"],
     },
   },
