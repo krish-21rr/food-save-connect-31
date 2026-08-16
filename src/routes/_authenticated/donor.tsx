@@ -10,9 +10,17 @@ import {
   formatDeadline,
   statusLabel,
   timeAgo,
+  timeLeft,
   useSignedUrls,
   type Donation,
 } from "@/lib/food";
+
+/** yyyy-MM-ddTHH:mm in the user's local timezone, for datetime-local inputs. */
+function toLocalInput(d: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 
 export const Route = createFileRoute("/_authenticated/donor")({
   head: () => ({
