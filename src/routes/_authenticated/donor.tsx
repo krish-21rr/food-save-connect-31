@@ -220,11 +220,41 @@ function DonorPage() {
                 <input
                   className="field"
                   type="datetime-local"
+                  min={toLocalInput(new Date(Date.now() + 5 * 60 * 1000))}
                   value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
                   required
                 />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {[
+                    { label: "In 2 hours", h: 2 },
+                    { label: "In 4 hours", h: 4 },
+                    { label: "In 8 hours", h: 8 },
+                    { label: "Tomorrow", h: 24 },
+                  ].map((q) => (
+                    <button
+                      key={q.label}
+                      type="button"
+                      onClick={() => setDeadline(toLocalInput(new Date(Date.now() + q.h * 3600 * 1000)))}
+                      className="rounded-full border border-border px-3 py-1 text-xs font-bold text-muted-foreground transition-colors hover:border-brand hover:text-brand"
+                    >
+                      {q.label}
+                    </button>
+                  ))}
+                </div>
+                {deadline && (
+                  <p
+                    className={`mt-2 text-xs font-bold ${
+                      new Date(deadline).getTime() > Date.now() ? "text-brand" : "text-destructive"
+                    }`}
+                  >
+                    {new Date(deadline).getTime() > Date.now()
+                      ? `Goes live now and stays visible for ${timeLeft(new Date(deadline).toISOString())}`
+                      : "That time has already passed — receivers won't see this listing. Pick a future time."}
+                  </p>
+                )}
               </Field>
+
               <Field label="Pickup Address" full>
                 <input
                   className="field"
