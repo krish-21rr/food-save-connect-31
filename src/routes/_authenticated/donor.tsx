@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Camera, CheckCircle2, PackageCheck, ShieldCheck, Trash2, X } from "lucide-react";
+import { Bike, Camera, CheckCircle2, MessageCircle, PackageCheck, ShieldCheck, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { ChatPanel } from "@/components/ChatPanel";
 import { useAuth } from "@/lib/auth";
 import {
   BUCKET,
@@ -58,6 +59,7 @@ function DonorPage() {
   const { user, profile, role } = useAuth();
   const [rows, setRows] = useState<Row[]>([]);
   const [busy, setBusy] = useState(false);
+  const [chat, setChat] = useState<{ id: string; title: string } | null>(null);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("cooked");
@@ -396,12 +398,15 @@ function DonorPage() {
                   row={r}
                   onDelete={() => void remove(r.id)}
                   onPicked={() => void markPicked(r.id)}
+                  onChat={() => setChat({ id: r.id, title: r.title })}
                 />
               ))}
             </div>
           )}
         </section>
       </main>
+
+      {chat && <ChatPanel donationId={chat.id} title={chat.title} onClose={() => setChat(null)} />}
     </div>
   );
 }
@@ -410,10 +415,12 @@ function ListingCard({
   row,
   onDelete,
   onPicked,
+  onChat,
 }: {
   row: Row;
   onDelete: () => void;
   onPicked: () => void;
+  onChat: () => void;
 }) {
   const images = useSignedUrls(row.image_urls ?? []);
   const receiver = row.receiver?.org_name || row.receiver?.display_name;
@@ -472,11 +479,27 @@ function ListingCard({
         )}
 
 
+        {row.status === "CLAIMED" && (
+          <p className="mt-2 flex items-center gap-2 text-xs font-bold text-muted-foreground">
+            <Bike className="h-4 w-4 text-brand" />
+            {row.volunteer_id
+              ? "Volunteer driver on the way"
+              : row.delivery_requested
+                ? "Waiting for a volunteer driver"
+                : "Receiver collecting directly"}
+          </p>
+        )}
+
         <div className="mt-4 flex gap-2">
           {row.status === "CLAIMED" && (
-            <button onClick={onPicked} className="btn-pill btn-primary flex-1 px-4 py-2 text-sm">
-              <PackageCheck className="h-4 w-4" /> Picked up
-            </button>
+            <>
+              <button onClick={onPicked} className="btn-pill btn-primary flex-1 px-4 py-2 text-sm">
+                <PackageCheck className="h-4 w-4" /> Picked up
+              </button>
+              <button onClick={onChat} className="btn-pill btn-outline px-4 py-2 text-sm">
+                <MessageCircle className="h-4 w-4" /> Chat
+              </button>
+            </>
           )}
           {row.status === "AVAILABLE" && (
             <button onClick={onDelete} className="btn-pill btn-outline flex-1 px-4 py-2 text-sm">
