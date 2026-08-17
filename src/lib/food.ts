@@ -20,6 +20,10 @@ export type Donation = {
   claimed_at: string | null;
   picked_up_at: string | null;
   created_at: string;
+  delivery_requested: boolean;
+  volunteer_id: string | null;
+  volunteer_accepted_at: string | null;
+  delivered_at: string | null;
 };
 
 export const BUCKET = "food-photos";

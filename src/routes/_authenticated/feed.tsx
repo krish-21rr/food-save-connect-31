@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
+  Bike,
   Clock,
+  MessageCircle,
   Leaf,
   MapPin,
   PackageCheck,
@@ -13,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { ChatPanel } from "@/components/ChatPanel";
 import { useAuth } from "@/lib/auth";
 import {
   formatDeadline,
@@ -61,6 +64,7 @@ function FeedPage() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [chat, setChat] = useState<{ id: string; title: string } | null>(null);
 
   const fetchRows = async () => {
     const { data, error } = await supabase
@@ -130,6 +134,15 @@ function FeedPage() {
     setBusyId(null);
     if (error) toast.error(error.message);
     else toast.success("Pickup confirmed — thank you!");
+    void fetchRows();
+  };
+
+  const requestDelivery = async (id: string) => {
+    setBusyId(id);
+    const { error } = await supabase.rpc("request_delivery", { _donation_id: id });
+    setBusyId(null);
+    if (error) toast.error(error.message);
+    else toast.success("Volunteer drivers have been notified — a run is now open.");
     void fetchRows();
   };
 
@@ -218,11 +231,15 @@ function FeedPage() {
                 busy={busyId === d.id}
                 onClaim={() => void claim(d.id)}
                 onPicked={() => void markPicked(d.id)}
+                onChat={() => setChat({ id: d.id, title: d.title })}
+                onRequestDelivery={() => void requestDelivery(d.id)}
               />
             ))}
           </div>
         )}
       </main>
+
+      {chat && <ChatPanel donationId={chat.id} title={chat.title} onClose={() => setChat(null)} />}
     </div>
   );
 }
@@ -240,12 +257,16 @@ function DonationCard({
   busy,
   onClaim,
   onPicked,
+  onChat,
+  onRequestDelivery,
 }: {
   row: Row;
   mine: boolean;
   busy: boolean;
   onClaim: () => void;
   onPicked: () => void;
+  onChat: () => void;
+  onRequestDelivery: () => void;
 }) {
   const images = useSignedUrls(row.image_urls ?? []);
   const donorName = row.donor?.org_name || row.donor?.display_name || "Donor";
@@ -314,9 +335,37 @@ function DonationCard({
               {busy ? "Claiming…" : "Claim food"}
             </button>
           ) : row.status === "CLAIMED" && mine ? (
-            <button onClick={onPicked} disabled={busy} className="btn-pill btn-outline w-full disabled:opacity-60">
-              <PackageCheck className="h-4 w-4" /> Mark picked up
-            </button>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <button
+                  onClick={onPicked}
+                  disabled={busy}
+                  className="btn-pill btn-primary flex-1 px-4 py-2 text-sm disabled:opacity-60"
+                >
+                  <PackageCheck className="h-4 w-4" /> Picked up
+                </button>
+                <button onClick={onChat} className="btn-pill btn-outline px-4 py-2 text-sm">
+                  <MessageCircle className="h-4 w-4" /> Chat
+                </button>
+              </div>
+              {row.volunteer_id ? (
+                <p className="rounded-full bg-brand-soft py-2 text-center text-xs font-bold text-brand">
+                  Volunteer driver assigned
+                </p>
+              ) : row.delivery_requested ? (
+                <p className="rounded-full bg-secondary py-2 text-center text-xs font-bold text-muted-foreground">
+                  Waiting for a volunteer driver…
+                </p>
+              ) : (
+                <button
+                  onClick={onRequestDelivery}
+                  disabled={busy}
+                  className="btn-pill btn-outline w-full px-4 py-2 text-sm disabled:opacity-60"
+                >
+                  <Bike className="h-4 w-4" /> Request a volunteer driver
+                </button>
+              )}
+            </div>
           ) : (
             <p className="rounded-full bg-secondary py-2.5 text-center text-sm font-bold text-muted-foreground">
               {row.status === "CLAIMED"

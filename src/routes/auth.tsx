@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, HeartHandshake, Store, UtensilsCrossed } from "lucide-react";
+import { ArrowLeft, Bike, HeartHandshake, Store, UtensilsCrossed } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, type AccountRole } from "@/lib/auth";
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/auth")({
     const role = search["role"];
     const mode = search["mode"];
     return {
-      ...(role === "donor" || role === "receiver" ? { role } : {}),
+      ...(role === "donor" || role === "receiver" || role === "volunteer" ? { role } : {}),
       ...(mode === "signin" || mode === "signup" ? { mode } : {}),
     };
   },
@@ -51,7 +51,7 @@ function AuthPage() {
 
   useEffect(() => {
     if (loading || !session || !myRole) return;
-    void navigate({ to: myRole === "donor" ? "/donor" : "/feed", replace: true });
+    void navigate({ to: myRole === "donor" ? "/donor" : myRole === "volunteer" ? "/volunteer" : "/feed", replace: true });
   }, [loading, session, myRole, navigate]);
 
   const submit = async (e: React.FormEvent) => {
@@ -116,11 +116,12 @@ function AuthPage() {
 
         <form className="card-soft mt-8 p-6 sm:p-8" onSubmit={submit}>
           {mode === "signup" && (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               {(
                 [
                   { id: "donor", label: "I'm a Donor", sub: "Restaurant, hotel, individual", icon: Store },
                   { id: "receiver", label: "I'm a Receiver", sub: "NGO, shelter, individual", icon: HeartHandshake },
+                  { id: "volunteer", label: "I'm a Volunteer", sub: "Driver for pickup & delivery", icon: Bike },
                 ] as const
               ).map((opt) => (
                 <button

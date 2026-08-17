@@ -98,6 +98,14 @@ function Landing() {
               <Link to="/feed" className="btn-pill btn-outline text-base">
                 I Need Food
               </Link>
+              <Link
+                to="/auth"
+                search={{ role: "volunteer", mode: "signup" }}
+                className="btn-pill btn-outline text-base"
+              >
+                Drive Deliveries
+              </Link>
+
             </div>
             <dl className="mt-10 grid max-w-md grid-cols-3 gap-4">
               {[

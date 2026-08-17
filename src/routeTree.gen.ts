@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDonorRouteImport } from './routes/_authenticated/donor'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated/feed'
+import { Route as AuthenticatedVolunteerRouteImport } from './routes/_authenticated/volunteer'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,18 +40,25 @@ const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
   path: '/feed',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedVolunteerRoute = AuthenticatedVolunteerRouteImport.update({
+  id: '/volunteer',
+  path: '/volunteer',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/donor': typeof AuthenticatedDonorRoute
   '/feed': typeof AuthenticatedFeedRoute
+  '/volunteer': typeof AuthenticatedVolunteerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/donor': typeof AuthenticatedDonorRoute
   '/feed': typeof AuthenticatedFeedRoute
+  '/volunteer': typeof AuthenticatedVolunteerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +67,13 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/donor': typeof AuthenticatedDonorRoute
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
+  '/_authenticated/volunteer': typeof AuthenticatedVolunteerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/donor' | '/feed'
+  fullPaths: '/' | '/auth' | '/donor' | '/feed' | '/volunteer'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/donor' | '/feed'
+  to: '/' | '/auth' | '/donor' | '/feed' | '/volunteer'
   id:
     | '__root__'
     | '/'
@@ -72,6 +81,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/donor'
     | '/_authenticated/feed'
+    | '/_authenticated/volunteer'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,17 +127,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFeedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/volunteer': {
+      id: '/_authenticated/volunteer'
+      path: '/volunteer'
+      fullPath: '/volunteer'
+      preLoaderRoute: typeof AuthenticatedVolunteerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDonorRoute: typeof AuthenticatedDonorRoute
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
+  AuthenticatedVolunteerRoute: typeof AuthenticatedVolunteerRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDonorRoute: AuthenticatedDonorRoute,
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
+  AuthenticatedVolunteerRoute: AuthenticatedVolunteerRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
