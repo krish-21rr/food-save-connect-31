@@ -89,6 +89,65 @@ export type Database = {
         }
         Relationships: []
       }
+      food_requests: {
+        Row: {
+          address: string
+          created_at: string
+          fulfilled_at: string | null
+          fulfilled_by: string | null
+          fulfilled_donation_id: string | null
+          id: string
+          meals_needed: number
+          needed_by: string
+          notes: string | null
+          receiver_id: string
+          status: Database["public"]["Enums"]["request_status"]
+          title: string
+          updated_at: string
+          veg_only: boolean
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          fulfilled_at?: string | null
+          fulfilled_by?: string | null
+          fulfilled_donation_id?: string | null
+          id?: string
+          meals_needed?: number
+          needed_by: string
+          notes?: string | null
+          receiver_id: string
+          status?: Database["public"]["Enums"]["request_status"]
+          title: string
+          updated_at?: string
+          veg_only?: boolean
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          fulfilled_at?: string | null
+          fulfilled_by?: string | null
+          fulfilled_donation_id?: string | null
+          id?: string
+          meals_needed?: number
+          needed_by?: string
+          notes?: string | null
+          receiver_id?: string
+          status?: Database["public"]["Enums"]["request_status"]
+          title?: string
+          updated_at?: string
+          veg_only?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_requests_fulfilled_donation_id_fkey"
+            columns: ["fulfilled_donation_id"]
+            isOneToOne: false
+            referencedRelation: "donations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           body: string
@@ -151,6 +210,32 @@ export type Database = {
             foreignKeyName: "notifications_donation_id_fkey"
             columns: ["donation_id"]
             isOneToOne: false
+            referencedRelation: "donations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pickup_codes: {
+        Row: {
+          code: string
+          created_at: string
+          donation_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          donation_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          donation_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pickup_codes_donation_id_fkey"
+            columns: ["donation_id"]
+            isOneToOne: true
             referencedRelation: "donations"
             referencedColumns: ["id"]
           },
@@ -275,6 +360,31 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      cancel_request: {
+        Args: { _request_id: string }
+        Returns: {
+          address: string
+          created_at: string
+          fulfilled_at: string | null
+          fulfilled_by: string | null
+          fulfilled_donation_id: string | null
+          id: string
+          meals_needed: number
+          needed_by: string
+          notes: string | null
+          receiver_id: string
+          status: Database["public"]["Enums"]["request_status"]
+          title: string
+          updated_at: string
+          veg_only: boolean
+        }
+        SetofOptions: {
+          from: "*"
+          to: "food_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       claim_donation: {
         Args: { _donation_id: string }
         Returns: {
@@ -308,7 +418,66 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      confirm_pickup_with_code: {
+        Args: { _code: string; _donation_id: string }
+        Returns: {
+          address: string
+          allergens: string[]
+          category: string
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          deadline: string
+          delivered_at: string | null
+          delivery_requested: boolean
+          donor_id: string
+          expired_at: string | null
+          id: string
+          image_urls: string[]
+          notes: string | null
+          picked_up_at: string | null
+          quantity: string
+          status: Database["public"]["Enums"]["donation_status"]
+          title: string
+          updated_at: string
+          veg: boolean
+          volunteer_accepted_at: string | null
+          volunteer_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "donations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       expire_stale_donations: { Args: never; Returns: undefined }
+      fulfill_request: {
+        Args: { _donation_id?: string; _request_id: string }
+        Returns: {
+          address: string
+          created_at: string
+          fulfilled_at: string | null
+          fulfilled_by: string | null
+          fulfilled_donation_id: string | null
+          id: string
+          meals_needed: number
+          needed_by: string
+          notes: string | null
+          receiver_id: string
+          status: Database["public"]["Enums"]["request_status"]
+          title: string
+          updated_at: string
+          veg_only: boolean
+        }
+        SetofOptions: {
+          from: "*"
+          to: "food_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      get_pickup_code: { Args: { _donation_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["account_role"]
@@ -390,6 +559,7 @@ export type Database = {
     Enums: {
       account_role: "donor" | "receiver" | "volunteer"
       donation_status: "AVAILABLE" | "CLAIMED" | "PICKED_UP" | "EXPIRED"
+      request_status: "OPEN" | "FULFILLED" | "CANCELLED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -519,6 +689,7 @@ export const Constants = {
     Enums: {
       account_role: ["donor", "receiver", "volunteer"],
       donation_status: ["AVAILABLE", "CLAIMED", "PICKED_UP", "EXPIRED"],
+      request_status: ["OPEN", "FULFILLED", "CANCELLED"],
     },
   },
 } as const
