@@ -26,7 +26,7 @@ export function PickupScanDialog({
   const confirm = async (raw: string) => {
     if (submitted.current) return;
     const parts = raw.split(":");
-    const code = parts.length === 3 && parts[0] === "foodrescue" ? parts[2] : raw;
+    const code = (parts.length === 3 && parts[0] === "foodrescue" ? parts[2] : raw) ?? raw;
     if (parts.length === 3 && parts[1] !== donationId) {
       toast.error("That QR belongs to a different donation");
       return;
