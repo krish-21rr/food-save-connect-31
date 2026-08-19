@@ -33,7 +33,7 @@ function Header() {
         <a href="#how" className="hidden text-sm font-semibold text-muted-foreground hover:text-foreground sm:block">
           How it works
         </a>
-        <Link to="/feed" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
+        <Link to="/auth" search={{ mode: "signin" }} className="text-sm font-semibold text-muted-foreground hover:text-foreground">
           Log In
         </Link>
         <Link to="/donor" className="btn-pill btn-primary px-5 py-2.5 text-sm">
