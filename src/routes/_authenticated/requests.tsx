@@ -145,7 +145,7 @@ function RequestsPage() {
     setBusyId(req.id);
     const { error } = await supabase.rpc("fulfill_request", {
       _request_id: req.id,
-      _donation_id: donationId,
+      _donation_id: donationId ?? undefined,
     });
     setBusyId(null);
     setFulfilling(null);
