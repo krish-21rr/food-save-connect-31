@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Bike, Camera, CheckCircle2, MessageCircle, PackageCheck, ShieldCheck, Trash2, X } from "lucide-react";
+import { Bike, Camera, CheckCircle2, MessageCircle, PackageCheck, QrCode, ShieldCheck, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { ChatPanel } from "@/components/ChatPanel";
+import { PickupQRDialog } from "@/components/PickupQRDialog";
 import { useAuth } from "@/lib/auth";
 import {
   BUCKET,
@@ -60,6 +61,7 @@ function DonorPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [busy, setBusy] = useState(false);
   const [chat, setChat] = useState<{ id: string; title: string } | null>(null);
+  const [qr, setQr] = useState<{ id: string; title: string } | null>(null);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("cooked");
@@ -399,6 +401,7 @@ function DonorPage() {
                   onDelete={() => void remove(r.id)}
                   onPicked={() => void markPicked(r.id)}
                   onChat={() => setChat({ id: r.id, title: r.title })}
+                  onShowQr={() => setQr({ id: r.id, title: r.title })}
                 />
               ))}
             </div>
@@ -407,6 +410,7 @@ function DonorPage() {
       </main>
 
       {chat && <ChatPanel donationId={chat.id} title={chat.title} onClose={() => setChat(null)} />}
+      {qr && <PickupQRDialog donationId={qr.id} title={qr.title} onClose={() => setQr(null)} />}
     </div>
   );
 }
@@ -416,11 +420,13 @@ function ListingCard({
   onDelete,
   onPicked,
   onChat,
+  onShowQr,
 }: {
   row: Row;
   onDelete: () => void;
   onPicked: () => void;
   onChat: () => void;
+  onShowQr: () => void;
 }) {
   const images = useSignedUrls(row.image_urls ?? []);
   const receiver = row.receiver?.org_name || row.receiver?.display_name;
@@ -498,6 +504,14 @@ function ListingCard({
               </button>
               <button onClick={onChat} className="btn-pill btn-outline px-4 py-2 text-sm">
                 <MessageCircle className="h-4 w-4" /> Chat
+              </button>
+              <button
+                onClick={onShowQr}
+                aria-label="Show pickup QR"
+                title="Show pickup QR"
+                className="btn-pill btn-outline px-3 py-2 text-sm"
+              >
+                <QrCode className="h-4 w-4" />
               </button>
             </>
           )}
