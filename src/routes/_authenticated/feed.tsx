@@ -7,6 +7,7 @@ import {
   Leaf,
   MapPin,
   PackageCheck,
+  ScanLine,
   Phone,
   Search,
   SearchX,
@@ -16,6 +17,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { ChatPanel } from "@/components/ChatPanel";
+import { PickupScanDialog } from "@/components/PickupScanDialog";
 import { useAuth } from "@/lib/auth";
 import {
   formatDeadline,
@@ -64,6 +66,7 @@ function FeedPage() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [scan, setScan] = useState<{ id: string; title: string } | null>(null);
   const [chat, setChat] = useState<{ id: string; title: string } | null>(null);
 
   const fetchRows = async () => {
@@ -233,6 +236,7 @@ function FeedPage() {
                 onPicked={() => void markPicked(d.id)}
                 onChat={() => setChat({ id: d.id, title: d.title })}
                 onRequestDelivery={() => void requestDelivery(d.id)}
+                onScan={() => setScan({ id: d.id, title: d.title })}
               />
             ))}
           </div>
@@ -240,6 +244,14 @@ function FeedPage() {
       </main>
 
       {chat && <ChatPanel donationId={chat.id} title={chat.title} onClose={() => setChat(null)} />}
+      {scan && (
+        <PickupScanDialog
+          donationId={scan.id}
+          title={scan.title}
+          onClose={() => setScan(null)}
+          onConfirmed={() => void fetchRows()}
+        />
+      )}
     </div>
   );
 }
@@ -259,6 +271,7 @@ function DonationCard({
   onPicked,
   onChat,
   onRequestDelivery,
+  onScan,
 }: {
   row: Row;
   mine: boolean;
@@ -267,6 +280,7 @@ function DonationCard({
   onPicked: () => void;
   onChat: () => void;
   onRequestDelivery: () => void;
+  onScan: () => void;
 }) {
   const images = useSignedUrls(row.image_urls ?? []);
   const donorName = row.donor?.org_name || row.donor?.display_name || "Donor";
@@ -348,6 +362,12 @@ function DonationCard({
                   <MessageCircle className="h-4 w-4" /> Chat
                 </button>
               </div>
+              <button
+                onClick={onScan}
+                className="btn-pill btn-outline w-full px-4 py-2 text-sm"
+              >
+                <ScanLine className="h-4 w-4" /> Scan donor QR
+              </button>
               {row.volunteer_id ? (
                 <p className="rounded-full bg-brand-soft py-2 text-center text-xs font-bold text-brand">
                   Volunteer driver assigned

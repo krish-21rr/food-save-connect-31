@@ -12,7 +12,7 @@ type Notification = {
   created_at: string;
 };
 
-export function AppHeader({ active }: { active?: "feed" | "donor" | "volunteer" }) {
+export function AppHeader({ active }: { active?: "feed" | "donor" | "volunteer" | "requests" }) {
   const { user, profile, role, signOut } = useAuth();
   const navigate = useNavigate();
   const [items, setItems] = useState<Notification[]>([]);
@@ -84,6 +84,12 @@ export function AppHeader({ active }: { active?: "feed" | "donor" | "volunteer" 
             className={`rounded-full px-3 py-1.5 ${active === "feed" ? "bg-brand-soft text-brand" : "text-muted-foreground hover:text-foreground"}`}
           >
             Live Feed
+          </Link>
+          <Link
+            to="/requests"
+            className={`rounded-full px-3 py-1.5 ${active === "requests" ? "bg-brand-soft text-brand" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            Requests
           </Link>
           {role === "volunteer" && (
             <Link

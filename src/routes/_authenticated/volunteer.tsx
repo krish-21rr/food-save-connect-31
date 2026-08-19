@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Bike, Clock, MapPin, MessageCircle, PackageCheck, Phone, Users, X } from "lucide-react";
+import { Bike, Clock, MapPin, MessageCircle, PackageCheck, Phone, ScanLine, Users, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { ChatPanel } from "@/components/ChatPanel";
+import { PickupScanDialog } from "@/components/PickupScanDialog";
 import { useAuth } from "@/lib/auth";
 import { formatDeadline, timeLeft, type Donation } from "@/lib/food";
 
@@ -36,6 +37,7 @@ function VolunteerPage() {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [chat, setChat] = useState<{ id: string; title: string } | null>(null);
+  const [scan, setScan] = useState<{ id: string; title: string } | null>(null);
 
   const fetchRows = async () => {
     const { data, error } = await supabase
@@ -144,6 +146,7 @@ function VolunteerPage() {
                   onCancel={() => void run("cancel_delivery", r.id, "Run released")}
                   onDelivered={() => void run("mark_picked_up", r.id, "Delivery confirmed — thank you!")}
                   onChat={() => setChat({ id: r.id, title: r.title })}
+                  onScan={() => setScan({ id: r.id, title: r.title })}
                 />
               ))}
             </div>
@@ -179,6 +182,7 @@ function VolunteerPage() {
                   onCancel={() => void run("cancel_delivery", r.id, "Run released")}
                   onDelivered={() => void run("mark_picked_up", r.id, "Delivery confirmed")}
                   onChat={() => setChat({ id: r.id, title: r.title })}
+                  onScan={() => setScan({ id: r.id, title: r.title })}
                 />
               ))}
             </div>
@@ -187,6 +191,14 @@ function VolunteerPage() {
       </main>
 
       {chat && <ChatPanel donationId={chat.id} title={chat.title} onClose={() => setChat(null)} />}
+      {scan && (
+        <PickupScanDialog
+          donationId={scan.id}
+          title={scan.title}
+          onClose={() => setScan(null)}
+          onConfirmed={() => void fetchRows()}
+        />
+      )}
     </div>
   );
 }
@@ -199,6 +211,7 @@ function RunCard({
   onCancel,
   onDelivered,
   onChat,
+  onScan,
 }: {
   row: Row;
   assigned?: boolean;
@@ -207,6 +220,7 @@ function RunCard({
   onCancel: () => void;
   onDelivered: () => void;
   onChat: () => void;
+  onScan: () => void;
 }) {
   const donor = row.donor?.org_name || row.donor?.display_name || "Donor";
   const receiver = row.receiver?.org_name || row.receiver?.display_name || "Receiver";
@@ -261,6 +275,14 @@ function RunCard({
             </button>
             <button onClick={onChat} className="btn-pill btn-outline px-4 py-2 text-sm">
               <MessageCircle className="h-4 w-4" /> Chat
+            </button>
+            <button
+              onClick={onScan}
+              aria-label="Scan pickup QR"
+              title="Scan pickup QR"
+              className="btn-pill btn-outline px-3 py-2 text-sm"
+            >
+              <ScanLine className="h-4 w-4" />
             </button>
             <button
               onClick={onCancel}

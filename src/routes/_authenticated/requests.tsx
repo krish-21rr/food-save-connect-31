@@ -143,10 +143,10 @@ function RequestsPage() {
 
   const fulfill = async (req: Row, donationId: string | null) => {
     setBusyId(req.id);
-    const { error } = await supabase.rpc("fulfill_request", {
-      _request_id: req.id,
-      _donation_id: donationId,
-    });
+    const { error } = await supabase.rpc(
+      "fulfill_request",
+      donationId ? { _request_id: req.id, _donation_id: donationId } : { _request_id: req.id },
+    );
     setBusyId(null);
     setFulfilling(null);
     if (error) toast.error(error.message);
